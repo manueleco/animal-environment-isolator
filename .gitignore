@@ -33,6 +33,7 @@ outputs/figures/**
 outputs/eval/
 outputs/web/**
 !outputs/web/.gitkeep
+!outputs/web/tokens.css
 
 # Modelos pesados
 models/**/*.ckpt

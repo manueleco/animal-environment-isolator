@@ -233,7 +233,7 @@ animal-environment-isolator/
 ## 8. Dependencias
 
 ### Base
-`librosa`, `soundfile`, `scipy`, `numpy`, `pandas`, `matplotlib`, `pyyaml`, `click`, `tqdm`, `noisereduce`, `scikit-maad`, `scikit-learn`.
+`librosa`, `soundfile`, `scipy`, `numpy`, `pandas`, `matplotlib`, `pyyaml`, `click`, `tqdm`, `noisereduce`, `scikit-maad`, `scikit-learn`, `jinja2`.
 
 ### Validación
 `pandera` o `pydantic` (decisión pendiente — ver ADR-002).

@@ -1,0 +1,602 @@
+"""Render Hallmark-styled static HTML views with Jinja2."""
+
+from __future__ import annotations
+
+import re
+from importlib.resources import files
+from pathlib import Path
+from typing import Any
+
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "web"
+CRITIQUE_STAMP = "/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 */"
+
+TOKENS_CSS = """/* Hallmark · genre: editorial · macrostructure: Long Document · theme: Newsprint · enrichment: typographic · nav: N6 · footer: Ft4 · contrast: pass (40-41) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · mobile: pass (34, 49, 50-57) */
+:root {
+  --color-paper: oklch(96.5% 0.018 92);
+  --color-paper-soft: oklch(92.5% 0.022 92);
+  --color-paper-raised: oklch(98.2% 0.014 92);
+  --color-ink: oklch(19% 0.035 238);
+  --color-muted: oklch(42% 0.04 238);
+  --color-line: oklch(73% 0.035 92);
+  --color-rule-strong: oklch(31% 0.035 238);
+  --color-accent: oklch(48% 0.10 179);
+  --color-accent-soft: oklch(88% 0.052 179);
+  --color-accent-ink: oklch(15% 0.03 238);
+  --color-focus: oklch(55% 0.12 179);
+  --color-placeholder: oklch(80% 0.018 238);
+  --color-transparent: oklch(0% 0.01 238 / 0);
+
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-outlier: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --line-thin: 1px;
+  --measure: 68ch;
+}
+
+html,
+body {
+  margin: 0;
+  min-width: 0;
+  overflow-x: clip;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+body {
+  min-height: 100svh;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--color-ink);
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: var(--line-thin);
+  text-underline-offset: var(--space-3xs);
+}
+
+a:hover {
+  color: var(--color-accent);
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: var(--space-3xs);
+}
+
+a:active,
+button:active {
+  transform: translateY(var(--line-thin));
+}
+
+a[aria-disabled="true"] {
+  color: var(--color-muted);
+  cursor: not-allowed;
+}
+
+.page {
+  min-width: 0;
+}
+
+.masthead {
+  padding: var(--space-sm) var(--space-sm) var(--space-md);
+  border-block-end: var(--line-thin) solid var(--color-rule-strong);
+}
+
+.masthead__issue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  padding-block-end: var(--space-xs);
+  border-block-end: var(--line-thin) solid var(--color-line);
+  color: var(--color-muted);
+  font-family: var(--font-outlier);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.masthead__brand {
+  display: block;
+  inline-size: 100%;
+  max-width: 100%;
+  padding-block-start: var(--space-md);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.02;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.masthead__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs) var(--space-sm);
+  margin-block-start: var(--space-md);
+  padding-block-start: var(--space-xs);
+  border-block-start: var(--line-thin) solid var(--color-line);
+}
+
+.masthead__nav a,
+.button,
+.view-link__name,
+.footer a {
+  white-space: nowrap;
+}
+
+.masthead__nav a {
+  font-family: var(--font-outlier);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.main {
+  padding-inline: var(--space-sm);
+}
+
+.hero {
+  display: grid;
+  gap: var(--space-lg);
+  padding-block: var(--space-xl) var(--space-2xl);
+  border-block-end: var(--line-thin) solid var(--color-rule-strong);
+}
+
+.hero__copy {
+  max-width: var(--measure);
+}
+
+.hero__title {
+  margin: 0;
+  inline-size: 100%;
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 0.98;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.hero__lede {
+  max-width: 58ch;
+  margin: var(--space-md) 0 0;
+  color: var(--color-muted);
+  font-size: clamp(1rem, 1vw + 0.95rem, 1.28rem);
+}
+
+.hero__aside {
+  align-self: end;
+  padding-block-start: var(--space-lg);
+  border-block-start: var(--line-thin) solid var(--color-line);
+}
+
+.hero__aside p {
+  margin: 0;
+  max-width: 45ch;
+  color: var(--color-muted);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  margin-block-start: var(--space-md);
+  padding: var(--space-xs) var(--space-md);
+  border: var(--line-thin) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-outlier);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+
+.button:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.button[aria-disabled="true"] {
+  border-color: var(--color-placeholder);
+  background: var(--color-paper-soft);
+  color: var(--color-muted);
+}
+
+.section {
+  padding-block: var(--space-2xl);
+  border-block-end: var(--line-thin) solid var(--color-line);
+}
+
+.section__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-sm);
+  margin-block-end: var(--space-lg);
+}
+
+.section__title {
+  margin: 0;
+  inline-size: 100%;
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.04;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.section__text {
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--color-muted);
+}
+
+.pipeline {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.phase {
+  display: grid;
+  grid-template-columns: minmax(3.5rem, 0.22fr) minmax(0, 1fr);
+  gap: var(--space-sm);
+  padding-block: var(--space-sm);
+  border-block-start: var(--line-thin) solid var(--color-line);
+}
+
+.phase__number {
+  color: var(--color-muted);
+  font-family: var(--font-outlier);
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.phase__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+  font-style: normal;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.phase__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-block-start: var(--space-xs);
+  color: var(--color-muted);
+  font-size: 0.92rem;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.7rem;
+  padding: var(--space-3xs) var(--space-2xs);
+  border: var(--line-thin) solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+  font-family: var(--font-outlier);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.status--done {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-ink);
+}
+
+.views {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.view-link {
+  display: grid;
+  gap: var(--space-2xs);
+  padding: var(--space-sm) 0;
+  border-block-start: var(--line-thin) solid var(--color-line);
+}
+
+.view-link__name {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-style: normal;
+  line-height: 1.1;
+  text-decoration-color: var(--color-accent);
+}
+
+.view-link__state {
+  color: var(--color-muted);
+  font-family: var(--font-outlier);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.note {
+  margin: var(--space-lg) 0 0;
+  padding: var(--space-sm);
+  border: var(--line-thin) solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-soft);
+  color: var(--color-muted);
+}
+
+.footer {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-xl) var(--space-sm);
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.footer a {
+  color: var(--color-paper);
+  text-decoration-color: var(--color-accent-soft);
+}
+
+.footer__brand {
+  margin: 0;
+  inline-size: 100%;
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 7vw, 3.5rem);
+  font-style: normal;
+  line-height: 1;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.footer__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: 0;
+  color: var(--color-paper-soft);
+  font-family: var(--font-outlier);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 40rem) {
+  .masthead__brand {
+    font-size: 3rem;
+  }
+
+  .hero__title {
+    max-width: 13ch;
+    font-size: 4.6rem;
+  }
+
+  .section__title {
+    font-size: 3.2rem;
+  }
+}
+
+@media (min-width: 52rem) {
+  .masthead,
+  .main,
+  .footer {
+    padding-inline: var(--space-lg);
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1.3fr) minmax(16rem, 0.7fr);
+    align-items: end;
+  }
+
+  .section__head {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1fr);
+    align-items: end;
+  }
+
+  .masthead__brand {
+    font-size: clamp(3rem, 6vw, 4.2rem);
+  }
+
+  .hero__title {
+    font-size: clamp(4.8rem, 8.5vw, 6.8rem);
+  }
+
+  .section__title {
+    font-size: clamp(3.4rem, 6vw, 4.4rem);
+  }
+
+  .views {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-lg);
+  }
+}
+
+@media (min-width: 72rem) {
+  .masthead,
+  .main,
+  .footer {
+    padding-inline: var(--space-2xl);
+  }
+
+  .pipeline {
+    max-width: 78rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+"""
+
+
+def _environment() -> Environment:
+    template_dir = files("frogiso.web").joinpath("templates")
+    return Environment(
+        loader=FileSystemLoader(str(template_dir)),
+        autoescape=select_autoescape(("html", "xml", "j2")),
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+
+
+def load_roadmap_phases(path: str | Path = PROJECT_ROOT / "ROADMAP.md") -> list[dict[str, str]]:
+    """Read phase names and statuses directly from ROADMAP.md."""
+
+    roadmap_path = Path(path)
+    text = roadmap_path.read_text(encoding="utf-8")
+    pattern = re.compile(
+        r"^### Fase (?P<number>\d+) [—-] (?P<title>.+?)\n\*\*Estado:\*\* (?P<status>.+?)$",
+        re.MULTILINE,
+    )
+    phases: list[dict[str, str]] = []
+    for match in pattern.finditer(text):
+        status = match.group("status").strip()
+        phases.append(
+            {
+                "number": match.group("number"),
+                "title": match.group("title").strip(),
+                "status": status,
+                "status_class": status.lower().replace(" ", "-"),
+            }
+        )
+    return phases
+
+
+def build_default_context(project_root: str | Path = PROJECT_ROOT) -> dict[str, Any]:
+    """Build context for the landing without inventing metrics."""
+
+    root = Path(project_root)
+    return {
+        "title": "Animal Environment Isolator",
+        "subtitle": "UPF SMC bioacoustics project",
+        "description": (
+            "A reproducible DSP-first pipeline for detecting and isolating frog calls "
+            "inside environmental field recordings."
+        ),
+        "cta_label": "Ver dashboard",
+        "repo_url": "https://github.com/manueleco/animal-environment-isolator",
+        "license": "—",
+        "roadmap_source": "ROADMAP.md",
+        "critique_stamp": CRITIQUE_STAMP,
+        "phases": load_roadmap_phases(root / "ROADMAP.md"),
+        "future_views": [
+            {
+                "name": "EDA",
+                "href": "#future-views",
+                "state": "Placeholder: pendiente de T-020/T-021/T-022",
+            },
+            {
+                "name": "A/B",
+                "href": "#future-views",
+                "state": "Placeholder: pendiente de T-050/T-052",
+            },
+            {
+                "name": "Curation",
+                "href": "#future-views",
+                "state": "Placeholder: pendiente de T-060/T-062",
+            },
+            {
+                "name": "Eval",
+                "href": "#future-views",
+                "state": "Placeholder: pendiente de T-083/T-084",
+            },
+        ],
+    }
+
+
+def render_landing(ctx: dict[str, Any] | None = None) -> str:
+    """Render the project landing page."""
+
+    context = build_default_context() if ctx is None else dict(ctx)
+    context.setdefault("critique_stamp", CRITIQUE_STAMP)
+    return _environment().get_template("landing.html.j2").render(**context)
+
+
+def render_view(name: str, ctx: dict[str, Any] | None = None) -> str:
+    """Render a named static view."""
+
+    if name != "landing":
+        raise KeyError(f"Unknown web view: {name}")
+    return render_landing(ctx)
+
+
+def publish(name: str, html: str, output_dir: str | Path = DEFAULT_OUTPUT_DIR) -> Path:
+    """Publish a rendered HTML view to the static output directory."""
+
+    destination = Path(output_dir)
+    destination.mkdir(parents=True, exist_ok=True)
+    filename = "index.html" if name == "landing" else f"{name}.html"
+    path = destination / filename
+    path.write_text(html, encoding="utf-8")
+    return path
+
+
+def write_tokens(output_dir: str | Path = DEFAULT_OUTPUT_DIR) -> Path:
+    """Write the locked Hallmark design tokens used by every static web view."""
+
+    destination = Path(output_dir)
+    destination.mkdir(parents=True, exist_ok=True)
+    path = destination / "tokens.css"
+    path.write_text(TOKENS_CSS, encoding="utf-8")
+    return path

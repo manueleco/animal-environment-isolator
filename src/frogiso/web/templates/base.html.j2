@@ -1,0 +1,41 @@
+<!-- {{ critique_stamp }} -->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ description }}">
+    <link rel="stylesheet" href="{{ tokens_href | default('tokens.css') }}">
+  </head>
+  <body>
+    <div class="page">
+      <header class="masthead" aria-label="Cabecera del proyecto">
+        <div class="masthead__issue">
+          <span>{{ subtitle }}</span>
+          <span>{{ roadmap_source }}</span>
+        </div>
+        <a class="masthead__brand" href="index.html">{{ title }}</a>
+        <nav class="masthead__nav" aria-label="Vistas">
+          <a href="index.html">Landing</a>
+          <a href="#future-views">EDA</a>
+          <a href="#future-views">A/B</a>
+          <a href="#future-views">Curar</a>
+          <a href="#future-views">Eval</a>
+        </nav>
+      </header>
+
+      <main class="main">
+        {% block main %}{% endblock %}
+      </main>
+
+      <footer class="footer">
+        <p class="footer__brand">{{ title }}</p>
+        <p class="footer__meta">
+          <span>Repo: <a href="{{ repo_url }}" aria-label="Repositorio {{ repo_url }}">GitHub</a></span>
+          <span>Licencia: {{ license }}</span>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

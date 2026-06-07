@@ -95,7 +95,7 @@ Implementar `src/frogiso/io/manifests.py` con schemas + validación.
 ---
 
 ### [T-014]
-**Estado:** Pending
+**Estado:** Done
 **Responsable:** Codex
 **Prioridad:** High
 **Dependencias:** T-012
@@ -109,6 +109,8 @@ Crear módulo `src/frogiso/web/` con shell Hallmark-styled y landing del proyect
 - `scripts/run_web.py --view {landing,all}` regenera el frontend.
 - Vista responsive verificada a 320/375/414/768 px.
 - Hallmark pre-emit critique stamp presente en cada HTML (`/* Hallmark · pre-emit critique: P? H? E? S? R? V? */`).
+
+**Cierre:** 2026-06-07 — Web shell estático con Jinja2 y landing Hallmark-styled generado en `outputs/web/`; `python scripts/run_web.py --view landing`, `pytest tests/test_web.py` y verificación CDP responsive 320/375/414/768 OK.
 
 ---
 

@@ -21,12 +21,16 @@ dependencies = [
     "pyyaml",
     "tqdm",
     "click",
+    "jinja2",
     "pandera",
     "pytest",
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"frogiso.web" = ["templates/*.j2"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

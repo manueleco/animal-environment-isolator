@@ -3,36 +3,33 @@
 > **Canal principal Claude → Codex.** Leer ANTES de cualquier acción.
 
 **Última actualización:** 2026-06-07
-**Actualizado por:** Claude
-**Versión del handoff:** v0005
-**Archivo anterior:** `docs/handoff_archive/HANDOFF_2026-06-07_v0004.md`
+**Actualizado por:** Codex
+**Versión del handoff:** v0006
+**Archivo anterior:** `docs/handoff_archive/HANDOFF_2026-06-07_v0005.md`
 
 ---
 
 ## 1. Estado actual
 
-- **Fase activa:** Fase 1.5 nueva — **Web shell + landing Hallmark** (cross-cutting con Fase 2).
+- **Fase activa:** Fase 2 — ingest/EDA, condicionada por audios reales.
 - **Hitos alcanzados:**
   - T-000, T-001, T-010, T-011, T-012 ✅ Done.
-  - Repo instalable, 24 tests pasando.
+  - T-014 ✅ Web shell estático Hallmark-styled con `src/frogiso/web/`, `scripts/run_web.py`, `outputs/web/tokens.css` y landing generada.
+  - Repo instalable, 29 tests pasando.
 - **Decisión nueva:** **ADR-010** — GUI vía **Hallmark + HTML estático generado**, sin servidor. Frontend coherente en `outputs/web/`, generado por `src/frogiso/web/` con Jinja2.
-- **Reordenamiento:** se inserta **T-014 (web shell)** ANTES de T-013 (ingest) y T-020 (EDA) para que toda vista posterior publique al frontend desde el inicio.
+- **Verificación T-014:** `python scripts/run_web.py --view landing`, `pytest tests/test_web.py`, `pytest tests/` y medición CDP responsive a 320/375/414/768 px OK.
+- **Dependencia añadida:** `jinja2` registrada en `pyproject.toml` y `ARCHITECTURE.md §8`.
 
 ---
 
 ## 2. Tarea siguiente
 
-### **[T-014] Web shell + landing Hallmark-styled**
-Prompt: [CODEX_PROMPTS.md §"PROMPT 2.5"](CODEX_PROMPTS.md) (nuevo).
+### **Siguiente paso**
 
-Resumen:
-- Crear `src/frogiso/web/` (render.py, templates/).
-- Invocar la skill `hallmark` (default) con brief de landing académica.
-- Trasladar el output Hallmark a Jinja2 templates + tokens.css separados.
-- `scripts/run_web.py --view landing` produce `outputs/web/index.html`.
-- Verificar disciplinas Hallmark: pre-emit critique stamp, locked tokens, mobile-responsive, sin chrome fake, sin métricas inventadas.
+1. **Si hay audios reales en `data/raw/`:** ejecutar T-013 (ingest) para crear `metadata/recordings.csv`.
+2. **Si no hay audios:** avanzar a T-020 + T-021 + T-022 (EDA + galería web). En el `CODEX_PROMPTS.md` local de 2026-06-07, T-020/T-021 corresponden a **PROMPT 3**; T-022 está en `TASKS.md` como extensión Hallmark dependiente de T-014.
 
-Después de T-014: PROMPT 3 (T-013 ingest, sólo si hay audios en `data/raw/`) → PROMPT 4 (T-020+T-021+T-022 EDA + galería web) → resto.
+Nota de consistencia: algunas instrucciones externas llaman "PROMPT 4" a la ruta T-013/T-020/T-022, pero el archivo local verificable usa `PROMPT 3` para espectrogramas y `PROMPT 4` para band-pass. Seguir los tickets y `ARCHITECTURE.md`.
 
 ---
 
@@ -40,11 +37,13 @@ Después de T-014: PROMPT 3 (T-013 ingest, sólo si hay audios en `data/raw/`) �
 
 | Archivo | Para qué |
 |---|---|
-| `ARCHITECTURE.md` (§3, §8, §9 AS-09) | Módulo `web/` añadido, jinja2 como dep, AS-09. |
+| `ARCHITECTURE.md` (§3, §8, §9 AS-09) | Módulo `web/`, jinja2 como dep base, AS-09. |
 | `DECISIONS.md` ADR-010 | Estrategia GUI: Hallmark estático, no servidor. |
 | `TASKS.md` | T-014, T-022, T-052, T-062, T-084, T-101 añadidas. |
-| `CODEX_PROMPTS.md` PROMPT 2.5 | Instrucciones operativas T-014. |
-| Skill `hallmark` | `~/.agents/skills/hallmark/SKILL.md` (v1.1.0). Invocable por verbos default/audit/redesign/study. |
+| `CODEX_PROMPTS.md` PROMPT 3 | T-020/T-021 espectrogramas batch + notebook EDA. |
+| `src/frogiso/web/render.py` | Renderizador Jinja2 y tokens Hallmark para vistas estáticas. |
+| `outputs/web/tokens.css` | Tokens locked de Hallmark reutilizables por vistas futuras. |
+| Skill `hallmark` | `~/.agents/skills/hallmark/SKILL.md` (v1.1.0). Usar default/audit/redesign/study según corresponda. |
 
 ---
 
@@ -52,26 +51,25 @@ Después de T-014: PROMPT 3 (T-013 ingest, sólo si hay audios en `data/raw/`) �
 
 | Riesgo | Mitigación |
 |---|---|
-| Hallmark podría "improvisar" tokens dentro del HTML. | Gate 48 (locked tokens) lo prohíbe. Codex verifica antes de cerrar. |
-| Hallmark podría inventar métricas placeholder. | Gate 46. La landing inicial muestra el estado real de fases desde ROADMAP.md o usa `—` marcado como "metric to confirm". |
+| Vistas futuras podrían improvisar tokens fuera de `outputs/web/tokens.css`. | Gate 48: reutilizar tokens locked de T-014; añadir tokens sólo si se centralizan allí. |
+| Vistas futuras podrían inventar métricas para rellenar dashboard. | Gate 46: leer manifests/reportes reales o usar `—`/placeholder explícito. |
 | Riesgo de añadir deps de UI (React, Tailwind, etc.) | Bloque obligatorio + PROMPT 2.5 lo prohíben explícitamente. |
 | Vistas posteriores podrían divergir del design language | Gate "Locked tokens" + reuso obligatorio de `outputs/web/tokens.css`. |
-| Audios reales aún no subidos físicamente | T-013 sigue Blocked hasta upload del humano. Resto del trabajo no se bloquea. |
+| Audios reales aún no subidos físicamente | T-013 queda condicionado al upload del humano. Si no hay audios, avanzar EDA con la ruta que el humano indique. |
 
 ---
 
 ## 5. Preguntas abiertas
 
 - **¿Especies objetivo concretas?** Sin esto, `configs/species/generic.yaml` queda en banda 1500–4000 Hz.
-- **¿Tienes una preferencia de "vibe" para la landing?** (sobrio académico / editorial / atmosférico / minimal). Si no opinas, Hallmark elegirá del catálogo por sí solo.
+- **¿Hay audios en `data/raw/`?** Si sí, T-013; si no, pedir/usar un directorio externo para T-020/T-021.
 
 ---
 
 ## 6. Qué puede modificar Codex
 
-✅ Todo lo bajo `src/`, `scripts/`, `tests/`, `configs/`, `notebooks/`.
-✅ `src/frogiso/web/` (nuevo).
-✅ `outputs/web/` (regenerable).
+✅ Todo lo bajo `src/`, `scripts/`, `tests/`, `configs/`, `notebooks/` que corresponda al ticket.
+✅ `src/frogiso/web/` y `outputs/web/` para vistas estáticas Hallmark.
 ✅ `REUSE_REPORT.md`, `EXPERIMENT_LOG.md`, `DATASET_NOTES.md`, `TASKS.md`.
 ✅ `HANDOFF_TO_CODEX.md` (archivando primero la versión vigente).
 ✅ `DECISIONS.md` añadiendo ADRs nuevas (no editar las existentes).
@@ -95,7 +93,7 @@ Después de T-014: PROMPT 3 (T-013 ingest, sólo si hay audios en `data/raw/`) �
 |---|---|
 | 0 | Done |
 | 1 | Done |
-| 1.5 (nueva: web shell) | In Progress (T-014) |
+| 1.5 (web shell) | Done (T-014) |
 | 2 | Planned (T-013 condicionado a audios, T-020/T-021/T-022) |
 | 3–10 | Planned |
 

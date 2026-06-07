@@ -1,0 +1,66 @@
+{% extends "base.html.j2" %}
+
+{% block main %}
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__copy">
+    <h1 class="hero__title" id="hero-title">{{ title }}</h1>
+    <p class="hero__lede">{{ description }}</p>
+    <a class="button" href="#future-views">{{ cta_label }}</a>
+  </div>
+  <aside class="hero__aside" aria-label="Alcance">
+    <p>
+      Proyecto académico de bioacústica para revisores SMC: manifests CSV,
+      procesamiento determinístico y vistas estáticas regenerables desde los artefactos del pipeline.
+    </p>
+  </aside>
+</section>
+
+<section class="section" aria-labelledby="pipeline-title">
+  <header class="section__head">
+    <h2 class="section__title" id="pipeline-title">Roadmap real del pipeline</h2>
+    <p class="section__text">
+      Estados leídos desde {{ roadmap_source }}. Cuando una fase aún no ha producido artefactos,
+      la landing conserva el estado del roadmap y evita rellenar huecos con métricas no verificadas.
+    </p>
+  </header>
+
+  <div class="pipeline">
+    {% for phase in phases %}
+    <article class="phase">
+      <div class="phase__number">Fase {{ phase.number }}</div>
+      <div>
+        <h3 class="phase__title">{{ phase.title }}</h3>
+        <div class="phase__meta">
+          <span class="status status--{{ phase.status_class }}">{{ phase.status }}</span>
+          <span>{{ roadmap_source }}</span>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section" id="future-views" aria-labelledby="views-title">
+  <header class="section__head">
+    <h2 class="section__title" id="views-title">Vistas futuras</h2>
+    <p class="section__text">
+      Estos enlaces fijan la navegación del shell web. Cada destino se publicará cuando la fase
+      correspondiente genere manifests, figuras o métricas reales.
+    </p>
+  </header>
+
+  <div class="views">
+    {% for view in future_views %}
+    <div class="view-link">
+      <a class="view-link__name" href="{{ view.href }}" aria-disabled="true">{{ view.name }}</a>
+      <span class="view-link__state">{{ view.state }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <p class="note">
+    Sin servidor y sin framework JavaScript: cada vista se regenera con Python + Jinja2 desde
+    datos versionables o artefactos reproducibles.
+  </p>
+</section>
+{% endblock %}
