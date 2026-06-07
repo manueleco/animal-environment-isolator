@@ -24,7 +24,7 @@ Crear sistema de documentación Markdown base (este archivo + compañeros).
 ---
 
 ### [T-001]
-**Estado:** Pending
+**Estado:** Done
 **Responsable:** Codex
 **Prioridad:** Critical
 **Dependencias:** T-000
@@ -35,6 +35,8 @@ Auditar `manueleco/texture-dataset-curation` y `OriolFreixa/MirChordEstimationAu
 - Cada item cita ruta real del repo y descripción del archivo/función.
 - Tabla resumen al final con prioridades S/M/L.
 - Sección explícita de "qué NO reciclar" por dominio bioacústico.
+
+**Cierre:** 2026-06-07 — `REUSE_REPORT.md` poblado con auditoría real de ambos repos; commit `docs(T-001): populate REUSE_REPORT with real repo audit`.
 
 ---
 

@@ -19,7 +19,7 @@ Fases 0 → 6 completas + un baseline DSP (sin ML) capaz de detectar eventos y e
 ## Fases
 
 ### Fase 0 — Auditoría de repos previos + setup de documentación
-**Estado:** In Progress
+**Estado:** Done
 **Depende de:** —
 **Entregables:**
 - Sistema de docs Markdown (este archivo y compañeros). ✅
@@ -164,7 +164,7 @@ Fases 0 → 6 completas + un baseline DSP (sin ML) capaz de detectar eventos y e
 
 | Fase | Estado | Owner principal | Bloqueada por |
 |---|---|---|---|
-| 0  | In Progress | Claude → Codex (REUSE_REPORT) | — |
+| 0  | Done        | Claude → Codex (REUSE_REPORT) | — |
 | 1  | Planned     | Codex                          | 0 |
 | 2  | Planned     | Codex                          | 1 |
 | 3  | Planned     | Codex                          | 2 |
