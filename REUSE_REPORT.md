@@ -11,10 +11,19 @@
 
 ## 0. Cómo usar este documento
 
+> **ADR-009: reuso por replicación de patrón, no por copia de código.**
+> No clonamos ni importamos archivos. Documentamos *ideas* y proponemos cómo replicarlas
+> idiomáticamente en `src/frogiso/`. Las URLs son referencia, no fuente de import.
+
 - **No editar las secciones de framework.** Editar sólo los placeholders `TODO`.
-- Cada item debe citar **ruta real** del repo original: `path/to/file.py:func_name` o `path/to/module/`.
-- Esfuerzo: **S** (≤1 día), **M** (2–4 días), **L** (≥5 días o riesgo alto).
-- Si una ruta deja de existir o el repo es inaccesible, registrarlo en §4.
+- Cada item incluye:
+  - **ID R-NN** estable (lo citamos en docstrings y commits futuros).
+  - **Patrón/idea** (1–3 frases).
+  - **URL de referencia** (permalink GitHub al archivo o función concreta).
+  - **Qué hace allí** (1–2 frases).
+  - **Cómo replicarlo aquí**: módulo/función destino propuesto en `src/frogiso/`.
+  - **Esfuerzo**: S (≤1 día), M (2–4 días), L (≥5 días o riesgo alto).
+- Si una URL deja de existir o el repo es inaccesible, registrarlo en §4.
 
 ---
 

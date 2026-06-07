@@ -152,6 +152,25 @@
 
 ---
 
+## ADR-009 — Reuso por replicación de patrón, no por copia de código
+- **Fecha:** 2026-06-07
+- **Estado:** Accepted
+- **Decidido por:** Humano
+- **Contexto:** Los dos repos previos (`texture-dataset-curation`, `MirChordEstimationAugmentation`) son fuentes de inspiración arquitectónica. Copiar código arrastra deps, supuestos de dominio y bugs latentes. Lo valioso son **las ideas y la lógica**, no las implementaciones literales.
+- **Decisión:**
+  - **No** se clonan los repos al working tree del proyecto. Inspección remota vía GitHub web / `gh api` / WebFetch.
+  - El `REUSE_REPORT.md` documenta **patrones e ideas** con: descripción, URL del archivo fuente como referencia, propuesta de cómo replicarlo idiomáticamente en `frogiso`, esfuerzo.
+  - El código que entra al repo se escribe **de cero**, siguiendo nuestras convenciones (manifests pandera, ARCHITECTURE.md §4), y referencia el patrón origen vía ID `R-NN` en docstring.
+  - Excepción: snippets ≤20 líneas de utilidad pura (ej. fórmula concreta) pueden copiarse citando autoría + licencia en el docstring.
+- **Alternativas descartadas:**
+  - Clonar y copiar archivos → arrastra deps obsoletas, supuestos de dominio musical y bugs no auditados.
+  - Sub-módulo git de los repos → fricción operativa innecesaria.
+- **Consecuencias (+):** Código limpio, sin deuda heredada, deps mínimas, supuestos de dominio bioacústico desde el inicio.
+- **Consecuencias (−):** Reimplementar lleva algo más de tiempo. Aceptado.
+- **Referencias:** [REUSE_REPORT.md](REUSE_REPORT.md), [CODEX_PROMPTS.md "PROMPT 1"](CODEX_PROMPTS.md).
+
+---
+
 <!-- Plantilla para próximas ADR -->
 <!--
 ## ADR-NNN — <título>

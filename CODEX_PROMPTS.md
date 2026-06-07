@@ -54,46 +54,77 @@ PROTOCOLO GIT (ADR-008):
 
 ---
 
-## PROMPT 1 — Auditoría de repos previos (T-001)
+## PROMPT 1 — Auditoría de repos previos (T-001) — **REVISADO según ADR-009**
 
 ```
 [Bloque obligatorio arriba]
 
-Tarea: T-001 — Auditar manueleco/texture-dataset-curation y OriolFreixa/MirChordEstimationAugmentation. Poblar REUSE_REPORT.md.
+Tarea: T-001 — Estudiar los repos previos como referencia conceptual y poblar REUSE_REPORT.md.
 
 Objetivo:
-Producir un reuse report con análisis real (rutas concretas) de ambos repos.
+Extraer PATRONES, ideas y lógica reutilizables de:
+- https://github.com/manueleco/texture-dataset-curation
+- https://github.com/OriolFreixa/MirChordEstimationAugmentation
 
-Contexto técnico:
-- Proyecto nuevo: detección/aislamiento de cantos de ranas en grabaciones ambientales.
-- Stack: librosa, scipy, soundfile, numpy, pandas, noisereduce, scikit-maad, sklearn, opcional torch.
+NO se clona código al proyecto. NO se importan ni se copian archivos.
+Lo que entra al repo se reescribe de cero en `src/frogiso/` siguiendo nuestras convenciones,
+referenciando el patrón origen vía ID R-NN en docstring.
 
-Inputs:
-- Clonar ambos repos en .cache/external_repos/ (gitignored).
-- Leer árbol de carpetas, README, scripts principales, configs.
+Contexto:
+- ADR-009: reuso por replicación, no por copia.
+- Stack frogiso: librosa, scipy, soundfile, numpy, pandas, noisereduce, scikit-maad, sklearn,
+  pandera, opcional torch+lightning en Fase 8.
+
+Método de inspección permitido:
+- GitHub web (lectura directa de archivos).
+- `gh api repos/<owner>/<repo>/contents/<path>`.
+- WebFetch sobre URLs concretas.
+- NO clonar a .cache/ ni a ningún sitio.
 
 Outputs:
-- REUSE_REPORT.md actualizado con secciones por repo:
-  · "Reutilizable" — ruta del archivo + qué hace + cómo encaja aquí + esfuerzo S/M/L.
-  · "Adaptar" — ruta + qué cambiar para bioacústica.
-  · "Descartar" — ruta + por qué no aplica.
-  · "Riesgos de reciclar tal cual".
-- Tabla resumen al final con prioridades.
+REUSE_REPORT.md poblado con foco en PATRONES, no en código:
+- Por cada repo, secciones "Reutilizable" / "Adaptar" / "Descartar" / "Riesgos".
+- Cada item incluye:
+  · ID estable R-NN (para referenciarlo desde docstrings y commits futuros).
+  · Patrón / idea (descripción 1–3 frases).
+  · URL del archivo fuente (https://github.com/... permalink) como referencia.
+  · Qué hace allí (en 1–2 frases).
+  · Cómo replicarlo idiomáticamente en frogiso: módulo/función destino propuesto.
+  · Esfuerzo S/M/L.
+- Tabla resumen final con prioridades.
+- §7 con licencias verificadas (leer LICENSE de cada repo vía GitHub).
 
 Criterios de aceptación:
-- Cada item cita una ruta real (no inventada). Si el repo no es accesible, registrar en sección "Inaccesibilidad".
-- Mínimo 5 items reutilizables + 5 a adaptar + 3 a descartar por repo.
+- Cada URL apunta a un archivo verificable en GitHub (no inventada).
+- Mínimo 5 reutilizables + 5 a adaptar + 3 a descartar por repo.
+- Cada item de "Reutilizable" propone módulo destino concreto en frogiso.
+- Tabla resumen con IDs R-NN estables.
 
 Edge cases:
-- Repo movido / renombrado → registrar y proponer alternativa.
+- Repo movido / renombrado / privado → registrar en §4 "Inaccesibilidad" y proponer alternativa.
+- Archivo sin equivalente conceptual en bioacústica → va a "Descartar" con justificación.
 
-Qué NO debe hacer Codex:
-- No copiar código de los repos al proyecto.
-- No instalar sus dependencias en el entorno principal.
+NO hacer:
+- No clonar repos al disco.
+- No copiar bloques de código al repo frogiso (excepción: snippets ≤20 líneas de
+  utilidad pura, citando autoría + licencia en docstring — ADR-009).
+- No instalar deps de esos repos en el venv del proyecto.
+- No crear ningún archivo bajo src/frogiso/ en esta tarea (la implementación viene en T-010+).
+- No copiar al proyecto IRs, audios o assets de los repos.
 
-Reciclado/referencia:
-- Manifest CSV (texture-dataset-curation).
-- Augmentación realista + split a nivel de track (MirChordEstimationAugmentation).
+Reciclado/referencia esperada (no exhaustiva):
+- texture-dataset-curation: patrones de batch I/O, hashing/IDs, manifests CSV,
+  estructura de notebooks EDA, logging.
+- MirChordEstimationAugmentation: pipeline de convolutional reverb, mix con ambient
+  a SNR target, random EQ suave, compresión suave, split por track sin leakage,
+  configs YAML, estructura de runs.
+
+Cierre:
+1. TASKS.md: T-001 → Done con fecha.
+2. HANDOFF_TO_CODEX.md: archivar v0002, escribir v0003 apuntando a PROMPT 2.
+3. Commit: docs(T-001): document reusable patterns from previous repos (no code copy)
+   Closes T-001
+4. git push origin main.
 ```
 
 ---
