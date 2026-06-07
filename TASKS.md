@@ -94,6 +94,24 @@ Implementar `src/frogiso/io/manifests.py` con schemas + validación.
 
 ---
 
+### [T-014]
+**Estado:** Pending
+**Responsable:** Codex
+**Prioridad:** High
+**Dependencias:** T-012
+
+Crear módulo `src/frogiso/web/` con shell Hallmark-styled y landing del proyecto (ADR-010).
+
+**Criterio de aceptación:**
+- `outputs/web/index.html` (landing) generado vía hallmark default + Jinja2.
+- `outputs/web/tokens.css` con design tokens locked (color + typography + spacing).
+- Layout base `web/templates/base.html.j2` con navegación a vistas futuras.
+- `scripts/run_web.py --view {landing,all}` regenera el frontend.
+- Vista responsive verificada a 320/375/414/768 px.
+- Hallmark pre-emit critique stamp presente en cada HTML (`/* Hallmark · pre-emit critique: P? H? E? S? R? V? */`).
+
+---
+
 ### [T-013]
 **Estado:** Pending
 **Responsable:** Humano (subir audios) + Codex (script)
@@ -138,6 +156,22 @@ Notebook `01_eda_spectrograms.ipynb` con galería + estadísticas por archivo.
 **Criterio de aceptación:**
 - Muestra distribución de duraciones, SR, energía por banda.
 - Documenta ≥5 observaciones sobre las grabaciones reales.
+
+---
+
+### [T-022]
+**Estado:** Pending
+**Responsable:** Codex
+**Prioridad:** Medium
+**Dependencias:** T-020, T-014
+
+Publicar vista `outputs/web/eda_gallery.html` Hallmark-styled con spectrogramas + estadísticas (lee `metadata/recordings.csv` + figuras).
+
+**Criterio de aceptación:**
+- Vista listada en la navegación de la landing.
+- Reusa `tokens.css` de T-014 (sin nuevos tokens improvisados).
+- Filtros por SR / duración / canales en cliente (JS vanilla, sin frameworks).
+- Mobile-responsive verificado en 320/375/414/768 px.
 
 ---
 
@@ -210,6 +244,22 @@ Implementar `src/frogiso/denoise/spectral.py` + `scripts/run_denoise.py`.
 
 ---
 
+### [T-052]
+**Estado:** Pending
+**Responsable:** Codex
+**Prioridad:** Medium
+**Dependencias:** T-050, T-014
+
+Publicar `outputs/web/ab_player.html` Hallmark-styled: pares original vs clean con `<audio>` embebido + spectrogramas + métricas SNR/flatness.
+
+**Criterio de aceptación:**
+- Lista paginada (≥ 50 clips sin lag).
+- Hotkeys teclado: ←/→ navegar, space play/pause.
+- Sin chrome fake (sin barras de browser dibujadas).
+- Mobile-responsive.
+
+---
+
 ### [T-051]
 **Estado:** Pending
 **Responsable:** Humano
@@ -236,6 +286,22 @@ Notebook `05_manual_curation.ipynb` con ipywidgets.
 - Audio player + waveform + spectrogram + metadata.
 - Etiquetado: positive / negative / ambiguous / discard.
 - Save incremental a `metadata/curation.csv`.
+
+---
+
+### [T-062]
+**Estado:** Pending
+**Responsable:** Codex
+**Prioridad:** Low
+**Dependencias:** T-060, T-014
+
+Publicar `outputs/web/curation_browser.html` Hallmark-styled (READ-ONLY): explorador de clips ya curados con filtros por label/confidence/recording. La edición sigue en el notebook (T-060).
+
+**Criterio de aceptación:**
+- Lee `metadata/curation.csv`.
+- Filtros: label, confidence ≥, recording, duración.
+- NO permite editar (sólo navegación + audio + spectrogram).
+- Stats agregadas (counts por label, distribución de confidence).
 
 ---
 
@@ -360,6 +426,22 @@ Implementar evaluación (`src/frogiso/eval/metrics.py` + `scripts/run_eval.py`).
 
 ---
 
+### [T-084]
+**Estado:** Pending
+**Responsable:** Codex
+**Prioridad:** High
+**Dependencias:** T-083, T-014
+
+Publicar `outputs/web/eval_<run_id>.html` Hallmark-styled: tabla de métricas + confusion matrix + galerías de FP/FN con audio embebido + métricas estratificadas.
+
+**Criterio de aceptación:**
+- Confusion matrix visible y legible en móvil.
+- N=20 FP y N=20 FN por confidence, no a mano.
+- Comparación de runs si hay varios.
+- Sin chrome fake; mobile-responsive.
+
+---
+
 ## Fase 9 — Avanzado (opcional)
 
 ### [T-090]
@@ -388,3 +470,24 @@ README completo + `reports/final_report.md` paper-style.
 - Reproducible siguiendo sólo README.
 - Sección explícita sobre limitaciones y datos sintéticos.
 - Métricas reales (no placeholders).
+
+---
+
+### [T-101]
+**Estado:** Pending
+**Responsable:** Codex
+**Prioridad:** High
+**Dependencias:** T-100, T-014, T-084
+
+Publicar landing final + reporte académico HTML Hallmark-styled.
+
+Sub-pasos:
+1. Ejecutar `hallmark audit outputs/web/index.html` y aplicar el punch list.
+2. Publicar `outputs/web/report.html` desde `reports/final_report.md` (vía Jinja2 + sección "Ethical considerations on synthetic data" obligatoria).
+3. Actualizar landing con enlaces a todas las vistas (eda, ab, curation, eval).
+
+**Criterio de aceptación:**
+- Pre-emit critique ≥4 en P/H/E/S/R/V.
+- Métricas reales del último run citadas con `<data>` semánticos.
+- Mobile-responsive 320/375/414/768 px verificado.
+- Cero métricas inventadas (gate 46 de Hallmark).

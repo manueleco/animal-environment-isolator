@@ -169,6 +169,74 @@ Reciclado:
 
 ---
 
+## PROMPT 2.5 — Web shell + landing Hallmark (T-014) — **NUEVO (ADR-010)**
+
+```
+[Bloque obligatorio.]
+
+Tarea: T-014 — Crear módulo src/frogiso/web/ con shell Hallmark-styled y landing.
+
+Contexto:
+ADR-010 establece la GUI del proyecto como HTML estático Hallmark-styled (sin servidor).
+Codex DEBE invocar la skill `hallmark` (instalada en ~/.agents/skills/hallmark, v1.1.0).
+Las disciplinas de Hallmark son obligatorias: pre-emit critique, locked tokens, mobile-responsive,
+sin chrome fake, sin métricas inventadas (gates 38a, 46, 47, 48, 49, 50, 51, 52, 53, 34).
+
+Outputs:
+- src/frogiso/web/__init__.py
+- src/frogiso/web/render.py — funciones `render_landing(context) -> str`, `render_view(name, ctx) -> str`,
+  `publish(name, html)`. Cualquier vista futura pasa por aquí.
+- src/frogiso/web/templates/base.html.j2 — layout base con `<head>` (tokens.css + viewport),
+  nav, main, footer. Slot para contenido por vista.
+- src/frogiso/web/templates/landing.html.j2 — landing del proyecto:
+  qué es, fases del pipeline, enlaces a vistas (eda/ab/curation/eval — placeholders por ahora).
+- outputs/web/tokens.css — design tokens (color OKLCH + typography 2+1 + spacing + radius).
+- outputs/web/index.html — landing renderizada.
+- outputs/web/.gitkeep ya existe.
+- scripts/run_web.py CLI: --view {landing,all}, --output outputs/web/.
+- pyproject.toml: añadir `jinja2` a deps base.
+- tests/test_web.py: smoke test que renderiza landing y verifica tokens.css cargado.
+
+Cómo invocar Hallmark:
+1. Pide a la skill hallmark (verbo default) que diseñe la landing del proyecto.
+   Brief: "Landing page académica para un proyecto de bioacústica (UPF SMC) que detecta y
+   aísla cantos de ranas en grabaciones ambientales. Audiencia: revisores académicos.
+   Tono: técnico, sobrio, sin marketing. Secciones a cubrir: hero corto con título +
+   1 frase + 1 CTA opcional ("Ver dashboard"); pipeline de 10 fases con estado;
+   enlaces a vistas (EDA, A/B, Curation, Eval); footer con repo URL + licencia."
+2. Hallmark elegirá un tema del catálogo (o custom si detecta intent creativa).
+3. Hallmark genera HTML+CSS con tokens locked → trasládalo a `tokens.css` (variables) +
+   `base.html.j2` + `landing.html.j2` (markup).
+4. Aplica el pre-emit critique stamp (`/* Hallmark · pre-emit critique: P? H? E? S? R? V? */`).
+
+Criterios de aceptación:
+- `python scripts/run_web.py --view landing` produce outputs/web/index.html abrible en browser.
+- Mobile responsive verificado a 320/375/414/768 px (sin scroll horizontal; gate 34).
+- Todos los colores y font-families referencian `var(--token-name)` (gate 48 — locked tokens).
+- Ningún chrome fake (sin barras de browser dibujadas, gate 47).
+- Cero métricas inventadas (gate 46) — los placeholders de "fases" muestran estado real
+  desde ROADMAP.md, no números fake.
+- Pre-emit critique presente al inicio de index.html con P/H/E/S/R/V ≥3 en todos.
+- `pytest tests/test_web.py` pasa.
+
+NO hacer:
+- No instalar Streamlit, Gradio, FastAPI, React, Tailwind, Bootstrap. Cero servidor, cero JS frameworks.
+- No copiar imágenes pesadas al repo (sin assets binarios > 100 KB).
+- No inventar métricas para llenar la landing (gate 46).
+- No usar italic headers (gate 38a).
+- No tocar src/frogiso/dsp/ ni otros módulos.
+
+Cierre:
+1. TASKS.md: T-014 → Done.
+2. ARCHITECTURE.md §8: añadir `jinja2` a deps base.
+3. HANDOFF v0005 apuntando a PROMPT 3 (T-013 ingest, condicionado a audios).
+4. Commit: feat(T-014): web shell and Hallmark-styled project landing
+   Closes T-014
+5. git push origin main.
+```
+
+---
+
 ## PROMPT 3 — Espectrogramas batch (T-020, T-021)
 
 ```
@@ -319,7 +387,7 @@ Qué NO debe hacer Codex:
 
 ---
 
-## PROMPT 7 — Denoising y A/B (T-050)
+## PROMPT 7 — Denoising y A/B (T-050 + T-052) — **REVISADO para Hallmark (ADR-010)**
 
 ```
 [Bloque obligatorio arriba]
@@ -533,7 +601,7 @@ Qué NO debe hacer Codex:
 
 ---
 
-## PROMPT 13 — Evaluación (T-083)
+## PROMPT 13 — Evaluación (T-083 + T-084) — **REVISADO para Hallmark (ADR-010)**
 
 ```
 [Bloque obligatorio arriba]
@@ -562,7 +630,7 @@ Qué NO debe hacer Codex:
 
 ---
 
-## PROMPT 14 — README + reporte académico (T-100)
+## PROMPT 14 — README + reporte académico + landing final (T-100 + T-101) — **REVISADO para Hallmark (ADR-010)**
 
 ```
 [Bloque obligatorio arriba]

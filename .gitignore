@@ -31,6 +31,8 @@ outputs/logs/**
 outputs/figures/**
 !outputs/figures/.gitkeep
 outputs/eval/
+outputs/web/**
+!outputs/web/.gitkeep
 
 # Modelos pesados
 models/**/*.ckpt

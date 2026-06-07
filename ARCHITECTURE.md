@@ -123,12 +123,14 @@ animal-environment-isolator/
 │   ├── datasets/  splits, manifests, loaders
 │   ├── models/    cnn_small, sklearn_baseline
 │   ├── eval/      métricas, FP/FN export
+│   ├── web/       templates Jinja2 + renderers (Hallmark-styled, ADR-010)
 │   └── utils/     logging, seed, config loader
 ├── scripts/             CLIs delgadas; no contienen lógica
 ├── outputs/
 │   ├── figures/
 │   ├── logs/
-│   └── runs/
+│   ├── runs/
+│   └── web/             (gitignored, regenerable; landing + vistas por fase, tokens.css)
 ├── models/              checkpoints (pesados gitignored)
 ├── reports/
 ├── tests/
@@ -185,6 +187,7 @@ animal-environment-isolator/
 | `datasets.splits` | `clips.csv` + `curation.csv` + ratios | 3 manifests de split |
 | `models.cnn_small` | mel-spectrograms desde split | checkpoint + métricas |
 | `eval.metrics` | predicciones + test manifest | `eval_<run_id>.md` + FP/FN export |
+| `web.render` | manifests + figuras + métricas | HTML estático Hallmark-styled en `outputs/web/` |
 
 ---
 
@@ -260,6 +263,7 @@ animal-environment-isolator/
 | AS-06 | Configs YAML, no parámetros en código. | Reproducibilidad. |
 | AS-07 | CLIs en `scripts/`, lógica en `src/frogiso/`. | Separación responsabilidad. |
 | AS-08 | Documentación Markdown versionada como interfaz Claude↔Codex. | Persistencia de contexto. |
+| AS-09 | GUI = HTML estático Hallmark-styled, sin servidor. | Reproducibilidad + design coherente sin runtime extra (ADR-010). |
 
 Cualquier alteración requiere ADR en [DECISIONS.md](DECISIONS.md).
 

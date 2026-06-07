@@ -171,6 +171,40 @@
 
 ---
 
+## ADR-010 — GUI vía Hallmark + HTML estático generado, no app interactiva
+- **Fecha:** 2026-06-07
+- **Estado:** Accepted
+- **Decidido por:** Humano + Claude
+- **Contexto:** El usuario instaló la skill `hallmark` (~/.agents/skills/hallmark, v1.1.0) y quiere una interfaz gráfica. Hallmark genera HTML+CSS estático con disciplina de diseño (anti-AI-slop, tokens, accesibilidad, responsive). NO es un framework de runtime. Lo que sí encaja perfectamente con el proyecto: dashboards, A/B players, FP/FN review, landing y reporte académico.
+- **Decisión:**
+  - **Frontend estático Hallmark-styled** generado por Python + Jinja2 a partir de los manifests CSV.
+  - Módulo nuevo `src/frogiso/web/` (templates + renderers).
+  - Destino: `outputs/web/` (gitignored como salida regenerable; sólo se versionan los templates y los CSS tokens).
+  - Cada fase que produce artefactos también publica su vista al frontend:
+    - Fase 2 → `eda_gallery.html`
+    - Fase 3 → `detections.html`
+    - Fase 5 → `ab_player.html`
+    - Fase 6 → `curation_browser.html` (read-only; la edición sigue en notebook).
+    - Fase 8 → `eval_<run_id>.html` con FP/FN embebidos.
+    - Fase 10 → `index.html` (landing) + `report.html` (reporte académico).
+  - **Tokens de diseño** (`outputs/web/tokens.css`) se generan UNA VEZ vía hallmark default en T-014 y se reutilizan en todas las vistas (disciplina "Locked tokens" de Hallmark).
+  - Curación interactiva permanece en notebook (ipywidgets) — no se reemplaza por una app web.
+  - **NO se introduce servidor** (Streamlit/Gradio/FastAPI). Si en el futuro se quiere interactividad real, requerirá una ADR nueva.
+- **Cómo invoca Codex a Hallmark:**
+  - Verbo `default` para construir nuevas vistas (T-014 landing, vistas por fase).
+  - Verbo `audit` para revisar vistas existentes antes del reporte final (T-101).
+  - Verbo `redesign` si el humano pide cambiar estructura sin cambiar contenido.
+  - Las disciplinas de Hallmark (pre-emit critique, locked tokens, mobile-responsive 320/375/414/768 px, sin chrome fake, sin métricas inventadas) son OBLIGATORIAS y aplican a todas las vistas.
+- **Alternativas descartadas:**
+  - Streamlit/Gradio → introduce servidor, complica reproducibilidad, no aporta sobre el caso de uso real (revisar artefactos producidos por el pipeline).
+  - Notebook puro como GUI → menos pulido, no comparte design language entre vistas.
+  - Static site generator de terceros (Hugo, MkDocs) → fricción de stack adicional; Jinja2 ya viene con el ecosistema Python.
+- **Consecuencias (+):** Vistas coherentes y profesionales; reproducible (regenerar tras cada run); commit-friendly (templates en git, salida en outputs/); cero servidor.
+- **Consecuencias (−):** No hay interactividad live (retunear thresholds desde el browser). Aceptado por ahora.
+- **Referencias:** [ARCHITECTURE.md §3 (módulo web)](ARCHITECTURE.md), CODEX_PROMPTS.md "PROMPT 3 (T-014)".
+
+---
+
 <!-- Plantilla para próximas ADR -->
 <!--
 ## ADR-NNN — <título>
