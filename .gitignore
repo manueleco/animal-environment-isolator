@@ -1,0 +1,67 @@
+# Datos binarios
+data/raw/**
+!data/raw/.gitkeep
+data/interim/**
+!data/interim/.gitkeep
+data/processed/**
+!data/processed/.gitkeep
+data/augmented/**
+!data/augmented/.gitkeep
+data/synthetic/**
+!data/synthetic/.gitkeep
+data/irs/**
+!data/irs/.gitkeep
+!data/irs/LICENSES.md
+data/ambient/**
+!data/ambient/.gitkeep
+!data/ambient/LICENSES.md
+
+# Curated: manifest sí, binarios no
+data/curated/**
+!data/curated/.gitkeep
+
+# Splits: manifests sí (versionados)
+# (no se ignoran)
+
+# Outputs
+outputs/runs/**
+!outputs/runs/.gitkeep
+outputs/logs/**
+!outputs/logs/.gitkeep
+outputs/figures/**
+!outputs/figures/.gitkeep
+outputs/eval/
+
+# Modelos pesados
+models/**/*.ckpt
+models/**/*.pt
+models/**/*.pth
+!models/.gitkeep
+
+# External repos clonados para auditoría
+.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code local settings
+.claude/
+
+# wandb
+wandb/
