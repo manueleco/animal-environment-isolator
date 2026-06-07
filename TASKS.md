@@ -43,7 +43,7 @@ Auditar `manueleco/texture-dataset-curation` y `OriolFreixa/MirChordEstimationAu
 ## Fase 1 — Estructura del repo
 
 ### [T-010]
-**Estado:** Pending
+**Estado:** Done
 **Responsable:** Codex
 **Prioridad:** Critical
 **Dependencias:** T-001
@@ -56,10 +56,12 @@ Crear `pyproject.toml` con deps base y estructura `src/frogiso/`.
 - `configs/default.yaml` cargable vía `frogiso.utils.config.load_config`.
 - `.gitignore` excluye `data/raw`, `data/interim`, `models/*.ckpt`, `outputs/runs`.
 
+**Cierre:** 2026-06-07 — Paquete instalable `animal-environment-isolator` creado con `pyproject.toml`, `src/frogiso/__init__.py` (`0.1.0`) y configs base; `pip install -e .` OK.
+
 ---
 
 ### [T-011]
-**Estado:** Pending
+**Estado:** Done
 **Responsable:** Codex
 **Prioridad:** High
 **Dependencias:** T-010
@@ -71,10 +73,12 @@ Implementar `src/frogiso/utils/{logging,config,seed}.py`.
 - `load_config(path, overrides)` soporta `--override key=value`.
 - `set_global_seed(seed)` siembra numpy, random y (si torch disponible) torch.
 
+**Cierre:** 2026-06-07 — Implementados `frogiso.utils.logging`, `frogiso.utils.config` y `frogiso.utils.seed`; `load_config("configs/default.yaml")` devuelve dict y soporta overrides CLI-style.
+
 ---
 
 ### [T-012]
-**Estado:** Pending
+**Estado:** Done
 **Responsable:** Codex
 **Prioridad:** High
 **Dependencias:** T-010
@@ -85,6 +89,8 @@ Implementar `src/frogiso/io/manifests.py` con schemas + validación.
 - Schemas declarados según §6 de `ARCHITECTURE.md`.
 - `read_manifest(path, schema)` lanza error claro si inválido.
 - Tests en `tests/test_manifests.py`.
+
+**Cierre:** 2026-06-07 — Implementados schemas `pandera` estrictos para los 8 CSV de `ARCHITECTURE.md §6`, hashing y tests; `pytest tests/` OK (`24 passed`).
 
 ---
 

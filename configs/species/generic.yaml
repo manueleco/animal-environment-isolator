@@ -1,0 +1,16 @@
+species:
+  id: generic
+  name: Generic bioacoustic target
+
+bandpass:
+  lowcut_hz: 1500
+  highcut_hz: 4000
+  order: 4
+  zero_phase: true
+
+detection:
+  min_event_duration_s: 0.05
+  max_event_duration_s: 5.0
+  merge_gap_s: 0.10
+
+notes: "Initial generic preset; tune per species after exploratory analysis."

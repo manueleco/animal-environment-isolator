@@ -30,16 +30,17 @@ Fases 0 → 6 completas + un baseline DSP (sin ML) capaz de detectar eventos y e
 ---
 
 ### Fase 1 — Estructura del nuevo repo
-**Estado:** Planned
+**Estado:** Done
 **Depende de:** Fase 0.
 **Entregables:**
 - Árbol de carpetas (§3 de [ARCHITECTURE.md](ARCHITECTURE.md)).
 - `pyproject.toml` con deps base.
 - `src/frogiso/utils/{logging,config,seed}.py`.
+- `src/frogiso/io/{manifests,hashing}.py` con schemas CSV de §6.
 - `configs/default.yaml`.
 - `.gitignore`.
 
-**Criterio de salida:** `pip install -e .` en clean env + `import frogiso` OK.
+**Criterio de salida:** `pip install -e .` en clean env + `import frogiso` OK. Cerrado el 2026-06-07 con `pytest tests/` OK (`24 passed`).
 
 ---
 

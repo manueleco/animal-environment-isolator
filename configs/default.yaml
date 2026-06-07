@@ -1,0 +1,39 @@
+seed: 1337
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  curated: data/curated
+  metadata: metadata
+  outputs: outputs
+  logs: outputs/logs
+  figures: outputs/figures
+  models: models
+
+audio:
+  sample_rate: 22050
+  mono: true
+  normalize: true
+
+spectrogram:
+  n_fft: 2048
+  hop_length: 512
+  win_length: 2048
+  n_mels: 128
+  fmin: 0
+  fmax: 11025
+  pcen: true
+
+species_config: configs/species/generic.yaml
+
+detect:
+  band_lowcut: 1500
+  band_highcut: 4000
+  threshold:
+    strategy: median_mad
+    k: 3.0
+
+logging:
+  level: INFO
+  log_dir: outputs/logs

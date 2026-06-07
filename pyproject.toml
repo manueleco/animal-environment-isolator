@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "animal-environment-isolator"
+version = "0.1.0"
+description = "Bioacoustic dataset curation toolkit for isolating animal events from environmental audio."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "librosa",
+    "soundfile",
+    "scipy",
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "noisereduce",
+    "scikit-maad",
+    "scikit-learn",
+    "pyyaml",
+    "tqdm",
+    "click",
+    "pandera",
+    "pytest",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
