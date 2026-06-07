@@ -16,22 +16,40 @@ ANTES DE HACER CAMBIOS:
 3. Leer ROADMAP.md
 4. Leer TASKS.md
 5. Leer HANDOFF_TO_CODEX.md
+6. Verificar `git status` está limpio y que la rama es `main`.
 
 Si existe contradicción entre archivos, ARCHITECTURE.md tiene prioridad.
 
-Reglas duras:
+REGLAS DURAS:
 - No cambies la arquitectura sin pedir autorización explícita (requiere ADR en DECISIONS.md).
 - No introduzcas dependencias nuevas sin documentarlas en pyproject.toml + ARCHITECTURE.md §8.
 - No elimines documentación.
 - No cambies formatos de manifest sin ADR.
 - No crees estructuras paralelas al roadmap.
+- Splits SIEMPRE por `recording_id`. Augmentación SOLO en train. Synthetic NUNCA en val/test.
+- Validación de manifests con `pandera` (ADR-002b).
+- Stack ML: PyTorch + Lightning (ADR-007). Sólo se instala a partir de Fase 8.
 
-Al cerrar la tarea, actualiza:
-- TASKS.md → mover el ticket a Done con fecha.
-- HANDOFF_TO_CODEX.md → archivar el anterior y escribir el nuevo estado.
-- Si hubo decisión técnica → DECISIONS.md (nueva ADR).
-- Si hubo experimento → EXPERIMENT_LOG.md.
-- Si tocaste datos → DATASET_NOTES.md.
+AL CERRAR LA TAREA, EN ESTE ORDEN:
+1. TASKS.md → mover el ticket a Done con fecha y commit corto.
+2. Si hubo decisión técnica → nueva ADR en DECISIONS.md.
+3. Si hubo experimento → entrada en EXPERIMENT_LOG.md.
+4. Si tocaste datos → actualizar DATASET_NOTES.md.
+5. Archivar el handoff actual:
+   cp HANDOFF_TO_CODEX.md docs/handoff_archive/HANDOFF_$(date +%Y-%m-%d)_<short_hash>.md
+6. Reescribir HANDOFF_TO_CODEX.md con: estado actual, última decisión, tarea siguiente,
+   archivos relevantes, riesgos, qué puede / no puede tocar Codex en la siguiente.
+
+PROTOCOLO GIT (ADR-008):
+- Un commit por tarea cerrada (commits intermedios permitidos, el final cierra el ticket).
+- Mensaje: `<tipo>(T-NNN): <título corto>` + cuerpo con cambios + `Closes T-NNN`.
+- Tipos: feat, fix, docs, refactor, test, chore, exp, data.
+- `git add` SELECTIVO (no `git add .` ciego — revisar `git status` antes).
+- Excluir SIEMPRE: data/raw, data/interim, data/processed, data/augmented, data/synthetic,
+  outputs/runs, models/*.ckpt, .claude/, .cache/, wandb/.
+- `git push origin main` tras el commit final del ticket.
+- NUNCA `--force`, NUNCA `--no-verify`, NUNCA mezclar tareas distintas en un commit.
+- Si el hook pre-commit falla, arreglar el problema y crear un NUEVO commit (no `--amend`).
 ```
 
 ---

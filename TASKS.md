@@ -86,6 +86,22 @@ Implementar `src/frogiso/io/manifests.py` con schemas + validación.
 
 ---
 
+### [T-013]
+**Estado:** Pending
+**Responsable:** Humano (subir audios) + Codex (script)
+**Prioridad:** High
+**Dependencias:** T-012
+
+Implementar script de ingest `scripts/run_ingest.py` que escanea `data/raw/`, calcula sha256, extrae duración/SR/channels y puebla `metadata/recordings.csv`.
+
+**Criterio de aceptación:**
+- `metadata/recordings.csv` válido contra schema.
+- Idempotente: re-ejecución no duplica filas.
+- Detecta duplicados por sha256 y avisa.
+- Skip de archivos corruptos con log.
+
+---
+
 ## Fase 2 — Exploración
 
 ### [T-020]

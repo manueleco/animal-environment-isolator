@@ -9,7 +9,8 @@
 ## 1. Fuentes de datos
 
 ### 1.1 Grabaciones de campo (datos reales — `data/raw/`)
-- **Origen:** grabaciones propias del investigador (pendiente de añadir físicamente).
+- **Origen:** grabaciones propias del investigador. **Disponibles** (confirmado 2026-06-07).
+- **Pendiente:** subir físicamente a `data/raw/` y poblar `metadata/recordings.csv` con un script de ingest (T-013).
 - **Formato esperado:** WAV/FLAC, mono o estéreo, SR ≥22050 Hz.
 - **Metadatos mínimos por grabación** (en `metadata/recordings.csv`):
   - `recording_id`, `path`, `sha256`, `duration_s`, `sample_rate`, `channels`, `recorded_at`, `location` (opcional, anonimizable), `device`, `notes`.

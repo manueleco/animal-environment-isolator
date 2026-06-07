@@ -110,6 +110,18 @@
 
 ---
 
+## ADR-002b — Validación de manifests con `pandera`
+- **Fecha:** 2026-06-07
+- **Estado:** Accepted
+- **Decidido por:** Claude (con luz verde implícita del humano: "si no opinas, voy con pandera").
+- **Contexto:** ADR-002 dejó pendiente la elección entre `pandera` y `pydantic` para validar CSV.
+- **Decisión:** `pandera` para schemas tabulares (lee directo del DataFrame, valida tipos + constraints + uniqueness + foreign keys lógicas con `Check`). `pydantic` queda reservado a configs YAML si hace falta.
+- **Alternativas descartadas:** `pydantic` puro (más verboso para tabular), `cerberus` (menos mantenido), validación manual con asserts (no auditable).
+- **Consecuencias (+):** Schemas declarativos legibles, integración natural con pandas.
+- **Consecuencias (−):** Dependencia adicional. Aceptado.
+
+---
+
 ## ADR-007 — PyTorch + Lightning como stack ML (no TF/JAX)
 - **Fecha:** 2026-06-07
 - **Estado:** Accepted
@@ -118,6 +130,25 @@
 - **Decisión:** Cuando se llegue a ML (Fase 8), stack = PyTorch + Lightning, con wandb opcional.
 - **Alternativas descartadas:** TensorFlow, JAX, Keras puro.
 - **Consecuencias:** Dependencia opcional, no instalada hasta Fase 8.
+
+---
+
+## ADR-008 — Codex gestiona git (commit + push directo a `main`)
+- **Fecha:** 2026-06-07
+- **Estado:** Accepted
+- **Decidido por:** Humano
+- **Contexto:** El usuario indicó explícitamente que Codex puede manejar git. El proyecto es académico de un único autor — overhead de PRs no aporta.
+- **Decisión:**
+  - Codex hace `git add` selectivo, `git commit` y `git push origin main` al cerrar **cada** tarea.
+  - **Un commit por tarea cerrada.** Mensaje estructurado: `<tipo>(T-NNN): <título corto>` + cuerpo con cambios + referencia al ticket.
+  - Tipos permitidos: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `exp` (experimento), `data` (cambio de manifests/datos).
+  - **Nunca** `--force` ni `--no-verify`.
+  - **Nunca** commits que mezclen tareas distintas.
+  - Si una tarea es muy grande, varios commits intermedios permitidos, pero el último debe cerrar el ticket explícitamente (`Closes T-NNN`).
+- **Alternativas descartadas:** PRs por tarea (overhead), commits manuales del humano (fricción).
+- **Consecuencias (+):** Trazabilidad clara ticket↔commit, historial auditable.
+- **Consecuencias (−):** Si Codex se equivoca, queda en historial. Mitigación: revisión humana periódica del log; nunca destructivo.
+- **Referencias:** Protocolo git completo en [CODEX_PROMPTS.md §"Bloque obligatorio"](CODEX_PROMPTS.md).
 
 ---
 
